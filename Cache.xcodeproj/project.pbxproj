@@ -6,6 +6,22 @@
 	objectVersion = 54;
 	objects = {
 
+/* Begin PBXAggregateTarget section */
+		2CCC51AC2D493E63008783E8 /* build */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 2CCC51AD2D493E63008783E8 /* Build configuration list for PBXAggregateTarget "build" */;
+			buildPhases = (
+				2CCC51B02D493E76008783E8 /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = build;
+			packageProductDependencies = (
+			);
+			productName = build;
+		};
+/* End PBXAggregateTarget section */
+
 /* Begin PBXBuildFile section */
 		0E79164A250E2AA500A71666 /* Hasher+constantAccrossExecutions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E791649250E2AA500A71666 /* Hasher+constantAccrossExecutions.swift */; };
 		0E79164B250E2AA500A71666 /* Hasher+constantAccrossExecutions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E791649250E2AA500A71666 /* Hasher+constantAccrossExecutions.swift */; };
@@ -754,6 +770,9 @@
 					285DC4792BB2CFCC0036F206 = {
 						CreatedOnToolsVersion = 15.3;
 					};
+					2CCC51AC2D493E63008783E8 = {
+						CreatedOnToolsVersion = 16.1;
+					};
 					BDEDD3551DBCE5B1007416A6 = {
 						CreatedOnToolsVersion = 8.0;
 						ProvisioningStyle = Manual;
@@ -799,6 +818,7 @@
 				BDEDD3551DBCE5B1007416A6 /* Cache-tvOS */,
 				BDEDD3771DBCEB8A007416A6 /* Cache-tvOS-Tests */,
 				285DC4792BB2CFCC0036F206 /* Cache-watchOS */,
+				2CCC51AC2D493E63008783E8 /* build */,
 			);
 		};
 /* End PBXProject section */
@@ -854,6 +874,26 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		2CCC51B02D493E76008783E8 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Merge Script\n\n# 1\n# Set bash script to exit immediately if any commands fail.\n\n\n\nset -e\n\n# 2\n# Setup some constants for use later on.\nFRAMEWORK_NAME=\"Cache-iOS\"\nPRODUCT_NAME=\"Cache\"\nFRAMEWORK_FOLDER_NAME=\"build\"\nSIMULATOR_ARCHIVE_PATH=\"${PROJECT_DIR}/${FRAMEWORK_FOLDER_NAME}/simulator.xcarchive\"\nIOS_DEVICE_ARCHIVE_PATH=\"${PROJECT_DIR}/${FRAMEWORK_FOLDER_NAME}/iOS.xcarchive\"\nCATALYST_ARCHIVE_PATH=\"${PROJECT_DIR}/${FRAMEWORK_FOLDER_NAME}/Catalyst.xcarchive\"\n\nif [ -z \"$BUILDOVERRIDE_PATH\" ]; then\nBUILDOVERRIDE_PATH=\"${PROJECT_DIR}/Products\"\nfi\nFRAMEWORK_PATH=\"${BUILDOVERRIDE_PATH}/${PRODUCT_NAME}.xcframework\"\n\n\n# 3\n# If remnants from a previous build exist, delete them.\nif [ -d \"${SRCROOT}/build\" ]; then\nrm -rf \"${SRCROOT}/build\"\nfi\n\nif [ -d \"${FRAMEWORK_PATH}\" ]; then\nrm -rf \"${FRAMEWORK_PATH}\"\nfi\n\nmkdir \"${FRAMEWORK_FOLDER_NAME}\"\n\nxcodebuild archive -scheme ${FRAMEWORK_NAME} -destination=\"iOS Simulator\" -archivePath \"${SIMULATOR_ARCHIVE_PATH}\" -sdk iphonesimulator SKIP_INSTALL=NO BUILD_LIBRARY_FOR_DISTRIBUTION=YES\n\nxcodebuild archive -scheme ${FRAMEWORK_NAME} -destination=\"iOS\" -archivePath \"${IOS_DEVICE_ARCHIVE_PATH}\" -sdk iphoneos SKIP_INSTALL=NO BUILD_LIBRARY_FOR_DISTRIBUTION=YES\n\nxcodebuild archive -scheme ${FRAMEWORK_NAME} -destination 'platform=macOS,variant=Mac Catalyst' -archivePath \"${CATALYST_ARCHIVE_PATH}\" -sdk macosx SKIP_INSTALL=NO BUILD_LIBRARY_FOR_DISTRIBUTION=YES SUPPORTS_MACCATALYST=YES\n\n\nxcodebuild -create-xcframework -framework ${SIMULATOR_ARCHIVE_PATH}/Products/Library/Frameworks/${PRODUCT_NAME}.framework -framework ${IOS_DEVICE_ARCHIVE_PATH}/Products/Library/Frameworks/${PRODUCT_NAME}.framework -framework ${CATALYST_ARCHIVE_PATH}/Products/Library/Frameworks/${PRODUCT_NAME}.framework -output \"${FRAMEWORK_PATH}\"\n\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		285DC4762BB2CFCC0036F206 /* Sources */ = {
@@ -1194,6 +1234,24 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
 				WATCHOS_DEPLOYMENT_TARGET = 6.0;
+			};
+			name = Release;
+		};
+		2CCC51AE2D493E63008783E8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = P53Q66SK8E;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		2CCC51AF2D493E63008783E8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = P53Q66SK8E;
+				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
 		};
@@ -1585,7 +1643,8 @@
 				PRODUCT_NAME = Cache;
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MACCATALYST = YES;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -1613,7 +1672,8 @@
 				PRODUCT_NAME = Cache;
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MACCATALYST = YES;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -1626,6 +1686,15 @@
 			buildConfigurations = (
 				285DC47F2BB2CFCC0036F206 /* Debug */,
 				285DC4802BB2CFCC0036F206 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2CCC51AD2D493E63008783E8 /* Build configuration list for PBXAggregateTarget "build" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2CCC51AE2D493E63008783E8 /* Debug */,
+				2CCC51AF2D493E63008783E8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
